@@ -107,6 +107,8 @@ const GateWaySocket = class {
     }
 
     async init() {
+        this.msgSubscriptions = {}
+
         if (this._ws) this._ws.close()
         this._ws = new WebSocket('wss://gateway.discord.gg/?v=8&encoding=json')
         this._ws.on('message', msg => this.handleMsg(msg))
@@ -180,8 +182,6 @@ const GateWaySocket = class {
             }).catch(err => {})
         }
     }
-
-    msgSubscriptions = {}
 
     // Yeah
     async sendMessage(opCode, data = {}) {
