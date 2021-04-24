@@ -22,7 +22,7 @@ var state = {
 try {
     state = JSON.parse(fs.readFileSync(statePath).toString())
 } catch (err) {}
-if (process.argv[2]) state.token = process.argv[3]
+if (process.argv[2]) state.token = process.argv[2]
 const saveState = () => {
     fs.promises.writeFile(statePath, JSON.stringify(state))
 }
