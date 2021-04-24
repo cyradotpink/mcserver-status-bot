@@ -9,6 +9,8 @@ const getServerStatus = require('./getServerStatus')
 const path = require('path')
 const process = require('process')
 
+var statePath = __dirname + '/../state.json'
+
 var state = {
     messages: {},
     session: {
@@ -18,11 +20,11 @@ var state = {
     token: null
 }
 try {
-    state = JSON.parse(fs.readFileSync('state.json').toString())
+    state = JSON.parse(fs.readFileSync(statePath).toString())
 } catch (err) {}
-if (process.argv[2]) state.token = process.argv[2]
+if (process.argv[2]) state.token = process.argv[3]
 const saveState = () => {
-    fs.promises.writeFile(__dirname + '/../state.json', JSON.stringify(state))
+    fs.promises.writeFile(statePath, JSON.stringify(state))
 }
 saveState()
 
