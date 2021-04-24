@@ -32,12 +32,6 @@ const intervals = {}
 
 const bot = new DiscordClient(state.token, state.session.id, state.session.sequence)
 
-bot.gatewaySocket.subToOpcode([0], (msg) => {
-    state.session.id = bot.gatewaySocket.sessionId
-    state.session.sequence = bot.gatewaySocket.sequence
-    saveState()
-})
-
 const createStatusMessage = (statusObj) => {
     if (!statusObj.players.sample) statusObj.players.sample = []
     var playerList = statusObj.players.sample
@@ -167,6 +161,13 @@ const stopWatchingHandler = async(msgData, groups) => {
 const main = async() => {
     await bot.awaitInit
     console.log('Waited for init')
+
+    bot.gatewaySocket.subToOpcode([0], (msg) => {
+        state.session.id = bot.gatewaySocket.sessionId
+        state.session.sequence = bot.gatewaySocket.sequence
+        saveState()
+    })
+
     state.session.id = bot.gatewaySocket.sessionId
     state.session.sequence = bot.gatewaySocket.sequence
     saveState()
