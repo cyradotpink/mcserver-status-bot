@@ -1,7 +1,9 @@
+'use strict'
+
 const https = require('https')
 const http = require('http')
 const crypto = require('crypto')
-const WebSocket = require('ws');
+const WebSocket = require('ws')
 
 
 // I don't really use response cookies in this project but ya know

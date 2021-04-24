@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+'use strict'
+
 const DiscordClient = require('./discordclient/DiscordClient')
 const fs = require('fs')
 const https = require('https')
@@ -37,7 +39,6 @@ bot.gatewaySocket.subToOpcode([0], (msg) => {
 })
 
 const createStatusMessage = (statusObj) => {
-    console.log(statusObj)
     if (!statusObj.players.sample) statusObj.players.sample = []
     var playerList = statusObj.players.sample
         .map(val => `- ${val.name}`)
@@ -129,9 +130,7 @@ const newWatchHandler = async(msgData, groups) => {
     }
     try {
         var updateMsg = createStatusMessage(serverStatus)
-        console.log(updateMsg.embed.fields)
         var newMessage = await bot.request('POST', `/channels/${msgData.channel_id}/messages`, updateMsg)
-        console.log(newMessage)
         if (newMessage.status !== 200) throw new Error('Non-200 status')
         state.messages[newMessage.data.id] = {
             host: groups.host,
