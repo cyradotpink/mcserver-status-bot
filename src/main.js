@@ -35,7 +35,7 @@ const bot = new DiscordClient(state.token, state.session.id, state.session.seque
 const createStatusMessage = (statusObj) => {
     if (!statusObj.players.sample) statusObj.players.sample = []
     var playerList = statusObj.players.sample
-        .map(val => `- ${val.name}`)
+        .map(val => `• ${val.name}`)
         .sort()
         .join('\n')
     return {
