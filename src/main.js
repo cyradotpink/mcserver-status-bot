@@ -60,7 +60,7 @@ const createStatusMessage = (statusObj) => {
 const createStatusFailMessage = (serverName) => {
     return {
         embed: {
-            title: statusObj.description.text,
+            title: serverName,
             color: 0xEA02BC,
             description: 'An error occured'
         }
