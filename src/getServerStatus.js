@@ -50,7 +50,7 @@ const getServerStatus = (host, port) => {
         var client = new net.Socket()
 
         setTimeout(() => {
-            client.close()
+            client.destroy()
             reject(new Error('timeout'))
         }, 3000)
 
