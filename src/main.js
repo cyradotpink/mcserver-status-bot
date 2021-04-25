@@ -45,9 +45,13 @@ const createStatusMessage = (statusObj) => {
             title: statusObj.description.text,
             color: 0xEA02BC,
             fields: [{
-                name: 'Player count',
+                name: 'Online',
                 value: `${statusObj.players.online} / ${statusObj.players.max}`,
-                inline: false
+                inline: true
+            }, {
+                name: 'Version',
+                value: `${statusObj.version.name}`,
+                inline: true
             }, {
                 name: 'Players',
                 value: playerList || 'None',
