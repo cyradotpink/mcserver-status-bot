@@ -136,7 +136,6 @@ const GateWaySocket = class {
                 return
             }
             this.sendMessage(1)
-                // console.log('Heartbeat sent', new Date())
             heartBeatAcknowledged = false
         }, hello.data.heartbeat_interval)
 

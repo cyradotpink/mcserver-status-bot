@@ -9,32 +9,53 @@ const getServerStatus = require('./getServerStatus')
 const path = require('path')
 const process = require('process')
 
-var statePath = __dirname + '/../state.json'
+
+var configPath
+var config
+try {
+    configPath = path.resolve(process.argv[2])
+    config = JSON.parse(fs.readFileSync(configPath).toString())
+} catch (err) {
+    console.error(err)
+    throw new Error('Configuration could not be loaded.')
+}
+
+var statePath = config.statePath ||
+    (() => { throw new Error('No state path provided') })()
+if (!path.isAbsolute(statePath))
+    statePath = path.normalize(path.dirname(configPath) + '/' + statePath)
+
+var botToken = config.botToken ||
+    (() => { throw new Error('No bot token provided') })()
+
+console.log(`Configured with:\nToken: ${botToken}\nState path: ${statePath}`)
+
+// throw new Error('test')
 
 var state = {
     messages: {},
     session: {
         id: null,
         sequence: null
-    },
-    token: null
+    }
 }
 try {
     state = JSON.parse(fs.readFileSync(statePath).toString())
 } catch (err) {}
-if (process.argv[2]) state.token = process.argv[2]
 const saveState = () => {
     fs.promises.writeFile(statePath, JSON.stringify(state))
 }
 saveState()
 
-if (!state.token) throw new Error('No token')
-
 const intervals = {}
 
-const bot = new DiscordClient(state.token, state.session.id, state.session.sequence)
+const bot = new DiscordClient(botToken, state.session.id, state.session.sequence)
 
-const createStatusMessage = (statusObj) => {
+const compareObjects = (a, b) => {
+    return (JSON.stringify(a) === JSON.stringify(b))
+}
+
+const createStatusMessage = (statusObj, ip) => {
     if (!statusObj.players.sample) statusObj.players.sample = []
     var playerList = statusObj.players.sample
         .map(val => `• ${val.name}`)
@@ -43,14 +64,15 @@ const createStatusMessage = (statusObj) => {
     return {
         embed: {
             title: statusObj.description.text,
+            description: `\`${ip}\``,
             color: 0xEA02BC,
             fields: [{
-                name: 'Online',
-                value: `${statusObj.players.online} / ${statusObj.players.max}`,
-                inline: true
-            }, {
                 name: 'Version',
                 value: `${statusObj.version.name}`,
+                inline: true
+            }, {
+                name: 'Online',
+                value: `${statusObj.players.online} / ${statusObj.players.max}`,
                 inline: true
             }, {
                 name: 'Players',
@@ -61,12 +83,12 @@ const createStatusMessage = (statusObj) => {
     }
 }
 
-const createStatusFailMessage = (serverName) => {
+const createStatusFailMessage = (serverName, ip) => {
     return {
         embed: {
             title: serverName,
             color: 0xEA02BC,
-            description: 'An error occured'
+            description: `\`${ip}\`\n[An error occured]`
         }
     }
 }
@@ -88,12 +110,12 @@ const doUpdate = async(messageId) => {
     var serverStatus
     try {
         serverStatus = await getServerStatus(msgState.host, msgState.port)
-        updateMsg = createStatusMessage(serverStatus)
+        updateMsg = createStatusMessage(serverStatus, `${msgState.host}:${msgState.port}`)
     } catch (err) {
         console.log('When trying to get server status', err)
-        updateMsg = createStatusFailMessage(msgState.lastState.description.text)
+        updateMsg = createStatusFailMessage(msgState.lastState.description.text, `${msgState.host}:${msgState.port}`)
     }
-    if (updateMsg.embed.fields[1].value === msgState.lastUpdateMessage.embed.fields[1].value) {
+    if (compareObjects(updateMsg, msgState.lastUpdateMessage)) {
         return
     }
     state.messages[messageId].lastState = serverStatus
@@ -124,14 +146,14 @@ const newWatchHandler = async(msgData, groups) => {
     } catch (err) {
         console.log('When trying to get server status', err)
         bot.request('POST', `/channels/${msgData.channel_id}/messages`, {
-            content: 'Something went wrong.'
+            content: 'Something went wrong :/'
         }).catch((err) => {
             console.log('When trying to send error message', err)
         })
         return
     }
     try {
-        var updateMsg = createStatusMessage(serverStatus)
+        var updateMsg = createStatusMessage(serverStatus, `${groups.host}:${groups.port}`)
         var newMessage = await bot.request('POST', `/channels/${msgData.channel_id}/messages`, updateMsg)
         if (newMessage.status !== 200) throw new Error('Non-200 status')
         state.messages[newMessage.data.id] = {
@@ -146,7 +168,7 @@ const newWatchHandler = async(msgData, groups) => {
         startUpdates(newMessage.data.id)
     } catch (err) {
         bot.request('POST', `/channels/${msgData.channel_id}/messages`, {
-            content: 'Something went wrong.'
+            content: 'Something went wrong :/'
         }).catch((err) => {
             console.log('When trying to send error message', err)
         })
