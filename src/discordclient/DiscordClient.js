@@ -26,8 +26,7 @@ const httpReq = (options, data = '', secure = true) => {
                 resolve({
                     'data': data,
                     'status': res.statusCode,
-                    'headers': res.headers,
-                    // 'cookies': parsedCookies
+                    'headers': res.headers
                 })
             })
         })
