@@ -6,22 +6,6 @@ const crypto = require('crypto')
 const WebSocket = require('ws')
 
 
-// I don't really use response cookies in this project but ya know
-const parseCookie = (cookie) => {
-    const argsSplit = cookie.split('; ');
-    const paramsDict = {};
-    argsSplit.slice(1).forEach((keyVal) => {
-        var keyValSplit = keyVal.split('=');
-        paramsDict[keyValSplit[0]] = keyValSplit[1] ? keyValSplit[1] : '';
-    });
-    return {
-        key: argsSplit[0].split('=')[0],
-        value: argsSplit[0].split('=')[1],
-        params: paramsDict
-    }
-}
-
-
 // I copy paste this small http request helper into basically every one of my projects
 const httpReq = (options, data = '', secure = true) => {
     return new Promise((resolve, reject) => {
@@ -39,18 +23,11 @@ const httpReq = (options, data = '', secure = true) => {
                 data += d
             })
             res.on('end', () => {
-                var cookieSets = res.headers['set-cookie']
-                var parsedCookies = []
-                if (Array.isArray(cookieSets)) {
-                    parsedCookies = cookieSets.map(cookieSet => parseCookie(cookieSet))
-                } else if (cookieSets) {
-                    parsedCookies = [parseCookie(cookieSets)]
-                }
                 resolve({
                     'data': data,
                     'status': res.statusCode,
                     'headers': res.headers,
-                    'cookies': parsedCookies
+                    // 'cookies': parsedCookies
                 })
             })
         })
