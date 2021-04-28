@@ -27,7 +27,7 @@ The state file will be created if does not exist.
 
 On a server that has the bot, send a message in the following format:
 ```
-!!watchmcserver <serveraddress>:<serverport>
+!!watchmcserver <address>:<port>
 ```
 The bot should create a new message with information about the server.
 In 20 second intervals, it will ask the minecraft server for new information, and update
