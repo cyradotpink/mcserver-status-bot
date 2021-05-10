@@ -2,7 +2,7 @@
 
 'use strict'
 
-const DiscordClient = require('./discordclient/DiscordClient')
+const DiscordClient = require('./DiscordClient')
 const fs = require('fs')
 const https = require('https')
 const getServerStatus = require('./getServerStatus')
@@ -51,9 +51,8 @@ const intervals = {}
 
 const bot = new DiscordClient(botToken, state.session.id, state.session.sequence)
 
-const compareObjects = (a, b) => {
-    return (JSON.stringify(a) === JSON.stringify(b))
-}
+const compareObjects = (a, b) =>
+    JSON.stringify(a) === JSON.stringify(b)
 
 const createStatusMessage = (statusObj, ip) => {
     if (!statusObj.players.sample) statusObj.players.sample = []
