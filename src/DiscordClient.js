@@ -85,7 +85,14 @@ const GateWaySocket = class {
 
     async init() {
         if (this._ws) this._ws.close()
-        this._ws = new WebSocket('wss://gateway.discord.gg/?v=8&encoding=json')
+        try {
+            this._ws = new WebSocket('wss://gateway.discord.gg/?v=8&encoding=json')
+        } catch (err) {
+            console.log('Failed to init Websocket', err)
+            console.log('Retrying in 20')
+            setTimeout(() => { this.init() }, 20000)
+            return
+        }
         this._ws.on('message', msg => this.handleMsg(msg))
 
         var hello = await this.awaitOneOpCode(10)

@@ -30,8 +30,6 @@ var botToken = config.botToken ||
 
 console.log(`Configured with:\nToken: ${botToken}\nState path: ${statePath}`)
 
-// throw new Error('test')
-
 var state = {
     messages: {},
     session: {
