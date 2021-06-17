@@ -1,6 +1,13 @@
 # A Discord bot for tracking information about Minecraft servers
 
-!! Work in Progress !!
+## Notes
+This project is work in progress.\
+Also I got frustrated with existing, overly abstracted and object-oriented node modules
+for interacting with the Discord Bot API, so I wrote my own, minimal, but also kind of bad module.\
+Currently, it has a bug where it does not successfully catch exceptions that occur when a websocket
+connection to Discord fails to be set up. This causes occasional crashes. I haven't bothered to look
+into this so far and instead just wrap the execution of the bot in a shell script that restarts
+it when it crashes.
 
 ## Installation
 
